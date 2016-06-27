@@ -3,10 +3,30 @@
         <div class="row top-padding">
             <div class="col-lg-2 col-md-pull-0 col-xs-pull-0">
             </div>
+            <!--<div ng-repeat="rectangle in rectangles">
+                <div class="ddd">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Who is it ?</label>
+                    <div class="col-sm-10">
+                        <input type="text" size ="50" ng-model="rectangle.name" placeholder="Put the name here" name="annot" />
+                    </div>
+                </div>
+                <br/>
+                Start:
+                <input ng-model="rectangle.startX"/>
+                <input ng-model="rectangle.startY"/>
+                <br/>
+                Size:
+                <input ng-model="rectangle.sizeX"/>
+                <input ng-model="rectangle.sizeY"/>
+                <br/>
+                </div>
+            </div>-->
             <div class="col-lg-8 col-md-12 col-xs-12">
                 <div id="video-container">
-                    <div id="transparent-plan"></div>
-                    <video id="player" cm-video-player ng-src={{model.video}} height="360px">
+                    <!--<div id="transparent-plan"></div>-->
+                    <drawing rectangle-list='rectangles'></drawing>
+                    <video id="player" cm-video-player ng-src={{model.video}} height="360px" crossorigin="anonymous">
                     </video>
                     <div class="controls">
                         <div id="play-button">
@@ -25,14 +45,15 @@
                     </div>
                 </div>
             </div>
+            <canvas id="recup" style="position:relative; display:none;"></canvas>
             <span style="float: right" ng-show="model.isDisplayedVideo">
             <div id="evidence_button_id" style="margin-top: 30px;margin-left: -180px;" alt="">
                 <input id="confirm" class="image-button" type="image" src="../img/validate.png"  value="Evidence" ng-click="model.saveQueueElement(true)" width="90px" height="90px">
             </div>
-            <div id="not_evidence_button_id" style="margin-top: 60px;;margin-left: -180px;">
+            <div id="not_evidence_button_id" style="margin-top: 60px;margin-left: -180px;">
                 <input id="cancel" class="image-button" type="image" src="../img/un validate.png" value="Not Evidence" ng-click="model.saveQueueElement(false)" width="90px" height="90px">
             </div>
-        </span>
+            </span>
         </div>
     </div>
     <div class="container-fluid" ng-show="model.isDisplayedVideo" style="margin-top: 30px;margin-left: 85px;">
@@ -42,9 +63,22 @@
             <div class="input-group">
                 <span class="input-group-addon" data-title="Enter your own annotation here"><b>Element:</b></span>
                 <form ng-submit="model.addEntry()" class="ng-pristine ng-valid">
-                    <input id="entry_input" type="text" style="font-size:25px;height:50px;" class="form-control ui-autocomplete-input ng-pristine ng-valid" ng-model="model.user_input.person_name">
+                    <input id="entry_input" name="entry_input" type="text" style="font-size:25px;height:50px;" class="form-control ng-pristine ng-valid" ng-model="model.user_input.person_name">
                 </form>
             </div>
         </div>
     </div>
+    <canvas id="evid" style="position:relative; display:none;"></canvas>
+    </br>
+    Evidence image preview:
+    </br>
+    <img id="evidence" style="display:none;"/>
+    </br>
+    <input id="Xbox" style="display:none;">
+    </br>
+    <input id="Ybox" style="display:none;">
+    </br>
+    <input id="Wbox" style="display:none;">
+    </br>
+    <input id="Hbox" style="display:none;">
 </div>
