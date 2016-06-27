@@ -6,6 +6,8 @@ var express = require("express"),
     async = require('async'),
     sprintf = require('sprintf').sprintf;
 
+var YAML = require('yamljs');
+ 
 // remember cookie
 var request = request.defaults({
     jar: true
@@ -16,18 +18,24 @@ var request = request.defaults({
 
 // PBR patch : support parametrized shotIn and shotOut
 program
-    .option('--camomile <url>', 'URL of Camomile server (e.g. https://camomile.fr/api)')
+    .option('--config <path>', 'path of the configuration file (e.g. ./config.yml)')
+    /*.option('--camomile <url>', 'URL of Camomile server (e.g. https://camomile.fr/api)')
     .option('--login <login>', 'Login for Camomile server (for queues creation)')
     .option('--password <password>', 'Password for Camomile server')
     .option('--pyannote <url>', 'URL of PyAnnote server (e.g. https://camomile.fr/tool)')
-    .option('--port <int>', 'Local port to listen to (default: 8070)')
+    .option('--port <int>', 'Local port to listen to (default: 8070)')*/
     .parse(process.argv);
 
-var camomile_api = program.camomile || process.env.CAMOMILE_API;
+/*var camomile_api = program.camomile || process.env.CAMOMILE_API;
 var login = program.login || process.env.CAMOMILE_LOGIN;
 var password = program.password || process.env.CAMOMILE_PASSWORD;
 var pyannote_api = program.pyannote || process.env.PYANNOTE_API;
-var port = parseInt(program.port || process.env.PORT || '8070', 10);
+var port = parseInt(program.port || process.env.PORT || '8070', 10);*/
+yamlObject = YAML.load(program.config);
+var camomile_api = yamlObject.camomile.host;
+var login = yamlObject.camomile.username;
+var password = yamlObject.camomile.password;
+var port = 8070;
 
 // configure express app
 app.configure(function () {
@@ -108,10 +116,12 @@ function getAllQueues(callback) {
 
             // MediaEval "Evidence" use case
             evidenceIn: function (callback) {
-                getQueueByName('mediaeval.evidence.in', callback);
+                //getQueueByName('  mediaeval.evidence.in', callback);
+                getQueueByName(yamlObject.annotation.evidence.queue.todo, callback);
             },
             evidenceOut: function (callback) {
-                getQueueByName('mediaeval.evidence.out', callback);
+                //getQueueByName('mediaeval.evidence.out', callback);
+                getQueueByName(yamlObject.annotation.evidence.queue.done, callback);
             },
         },
         function (err, queues) {
@@ -138,7 +148,7 @@ function create_config_route(queues, callback) {
     var get_config = function (req, res) {
         res.json({
             'camomile_api': camomile_api,
-            'pyannote_api': pyannote_api,
+            //'pyannote_api': pyannote_api,
             'queues': {
                 'evidenceIn': queues.evidenceIn,
                 'evidenceOut': queues.evidenceOut,
@@ -168,9 +178,9 @@ function create_config_file(callback) {
 
     config_js = sprintf(
         "angular.module('myApp.config', [])" + "\n" +
-        "   .value('DataRoot', '%s')" + "\n" +
-        "   .value('ToolRoot', '%s');",
-        camomile_api, pyannote_api
+        "   .value('DataRoot', '%s')" ,//+ "\n" +
+        //"   .value('ToolRoot', '%s');",
+        camomile_api//, pyannote_api
     );
 
     fs.writeFile(
@@ -190,7 +200,8 @@ function run_app(err, results) {
     app.listen(port);
     console.log('App is running at http://localhost:' + port + ' with');
     console.log('   * Camomile API --> ' + camomile_api);
-    console.log('   * PyAnnote API --> ' + pyannote_api);
+    //console.log('   * PyAnnote API --> ' + pyannote_api);
+    //console.log(yamlObject.camomile);
 };
 
 // this is where all these functions are actually called, in this order:
